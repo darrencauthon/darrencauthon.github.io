@@ -26,7 +26,7 @@
 
     var commandHello = {
         smart: true,
-        indexes: ["Do you know who is *", "I don't know who is *", "Is * a good person"],
+        indexes: ["my name is *"],
         action: function(i, wildcard) {
             var database = ["Carlos", "Bruce", "David", "Joseph", "Kenny"];
 
@@ -49,15 +49,15 @@
     artyom.addCommands(commandHello);
 
     function startContinuousArtyom(){
-        artyom.fatality();// use this to stop any of
+        artyom.fatality();
 
-        setTimeout(function(){// if you use artyom.fatality , wait 250 ms to initialize again.
+        setTimeout(function(){
             artyom.initialize({
-                lang:"en-GB",// A lot of languages are supported. Read the docs !
-                continuous:true,// Artyom will listen forever
-                listen:true, // Start recognizing
-                debug:true, // Show everything in the console
-                speed:1 // talk normally
+                lang:"en-GB",
+                continuous:true,
+                listen:true,
+                debug:true,
+                speed:1
             }).then(function(){
                 console.log("Ready to work !");
             });
