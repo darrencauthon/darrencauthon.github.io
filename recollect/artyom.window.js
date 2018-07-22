@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Artyom.js is a voice control, speech recognition and speech synthesis JavaScript library.
  *
  * @requires {webkitSpeechRecognition && speechSynthesis}
@@ -176,18 +176,18 @@ var Artyom = (function () {
         var preMessage = "[v" + this.getVersion() + "] Artyom.js";
         if (this.ArtyomProperties.debug === true) {
             switch (type) {
-                case "error":
-                    console.log("%c" + preMessage + ":%c " + message, 'background: #C12127; color: black;', 'color:black;');
-                    break;
-                case "warn":
-                    console.warn(message);
-                    break;
-                case "info":
-                    console.log("%c" + preMessage + ":%c " + message, 'background: #4285F4; color: #FFFFFF', 'color:black;');
-                    break;
-                default:
-                    console.log("%c" + preMessage + ":%c " + message, 'background: #005454; color: #BFF8F8', 'color:black;');
-                    break;
+            case "error":
+                console.log("%c" + preMessage + ":%c " + message, 'background: #C12127; color: black;', 'color:black;');
+                break;
+            case "warn":
+                console.warn(message);
+                break;
+            case "info":
+                console.log("%c" + preMessage + ":%c " + message, 'background: #4285F4; color: #FFFFFF', 'color:black;');
+                break;
+            default:
+                console.log("%c" + preMessage + ":%c " + message, 'background: #005454; color: #BFF8F8', 'color:black;');
+                break;
             }
         }
     };
@@ -1286,11 +1286,11 @@ var Artyom = (function () {
         var codes = { a: "", e: "", i: "", o: "", u: "", b: 1, f: 1, p: 1, v: 1, c: 2, g: 2, j: 2, k: 2, q: 2, s: 2, x: 2, z: 2, d: 3, t: 3, l: 4, m: 5, n: 5, r: 6 };
         r = f + a
             .map(function (v, i, a) {
-            return codes[v];
-        })
+                return codes[v];
+            })
             .filter(function (v, i, a) {
-            return ((i === 0) ? v !== codes[f] : v !== a[i - 1]);
-        })
+                return ((i === 0) ? v !== codes[f] : v !== a[i - 1]);
+            })
             .join('');
         return (r + '000').slice(0, 4).toUpperCase();
     };
