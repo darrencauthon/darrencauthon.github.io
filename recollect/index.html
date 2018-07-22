@@ -6,6 +6,7 @@
     <script src="vis.min.js" type="text/javascript"></script>
     <script src="jquery-3.3.1.min.js" type="text/javascript"></script>
     <script src="store.everything.min.js" type="text/javascript"></script>
+    <script src="artyom.window.js" type="text/javascript"></script>
     <link href="vis.min.css" rel="stylesheet" type="text/css" media="all" />
     <link href="style.css" rel="stylesheet" type="text/css" media="all" />
 </head>
@@ -20,6 +21,35 @@
 <button id='update-nodes'>Bring Forward</button>
 
 <script type="text/javascript">
+
+    artyom = new Artyom();
+
+    var commandHello = {
+        indexes:["hello","good morning","hey"],
+        action:function(){
+            artyom.say("Hey buddy ! How are you today?");
+        }
+    };
+
+    artyom.addCommands(commandHello);
+
+    function startContinuousArtyom(){
+        artyom.fatality();// use this to stop any of
+
+        setTimeout(function(){// if you use artyom.fatality , wait 250 ms to initialize again.
+            artyom.initialize({
+                lang:"en-GB",// A lot of languages are supported. Read the docs !
+                continuous:true,// Artyom will listen forever
+                listen:true, // Start recognizing
+                debug:true, // Show everything in the console
+                speed:1 // talk normally
+            }).then(function(){
+                console.log("Ready to work !");
+            });
+        },250);
+    }
+
+    startContinuousArtyom();
 
     var nodesOnThePage;
     var relationshipsOnThePage;
@@ -36,8 +66,16 @@
             if (recordsForQuerying.get(record.id) == undefined)
                 allData.records.push(record);
         }
+        console.log('Before saving, records:', JSON.parse(localStorage.getItem('records')));
+        console.log('Before saving, relationships', JSON.parse(localStorage.getItem('relationships')));
         localStorage.setItem('records', JSON.stringify(allData.records));
-        localStorage.setItem('relationships', JSON.stringify(allData.relationships));
+        var relationships = _.map(relationshipsOnThePage._data, (record) => {
+            return { from: record.from, to: record.to }
+        });
+        localStorage.setItem('relationships', JSON.stringify(relationships));
+        console.log('Saved');
+        console.log('After saving, records:', JSON.parse(localStorage.getItem('records')));
+        console.log('After saving, relationships', JSON.parse(localStorage.getItem('relationships')));
 
         //var relationshipsForQuerying = new vis.DataSet(allData.relationships);
         //console.log(getAllDataOnTheDisplay().relationships);
@@ -122,12 +160,20 @@
         nodesOnThePage = records.map(record => buildNodeFromRecord(record));
     }
 
+    const defaultColor = { border: '#5d5d5d', background: '#ccc' };
     function buildNodeFromRecord(record) {
-        return _.extend(
+        record.options = record.options || {};
+
+        var colorOptions = _.extend({ border: '#5d5d5d', background: '#ccc' }, record.options.color);
+        delete record.options.color;
+
+        var options = _.extend(
             {
                 id: record.id,
-                shape: 'box',
+                shape: 'circle',
+                shapeProperties: { borderDashes:[5,5] },
                 label:  buildLabel(record.id),
+                color: colorOptions,
                 widthConstraint: {
                     minimum: 120,
                     maximum: 120
@@ -135,10 +181,13 @@
                 heightConstraint: {
                     minimum: 30,
                     maximum: 40
-                }
+                },
+                font: { align: 'center' }
             },
             record.options
         );
+
+        return options;
     }
 
     function buildLabel(text) {
@@ -183,7 +232,8 @@
                     "centralGravity": 0.4,
                     "springLength": 0,
                     "springConstant": 0,
-                    "damping": 1
+                    "damping": 1,
+                    "avoidOverlap": .1
                 },
                 "maxVelocity": 8,
                 "minVelocity": 0.75
@@ -197,7 +247,6 @@
 
     function addNode(id) {
         nodesOnThePage.add({id:id, label:id, shape: 'box'});
-        console.log(id);
     }
 
     startNetwork(getData);
@@ -245,18 +294,6 @@
     //    }
     //    startNetwork();
     //}
-
-    var debug = true;
-    function debugAllData() {
-        console.log('allData', getAllDataOnTheDisplay());
-    }
-    setInterval(() => {
-        if(debug) {
-            saveAllDataOnThePage();
-            debugAllData();
-            console.log('Saved!');
-        }
-    }, 1000);
 </script>
 </body>
 <script src="recollect.js" type="text/javascript"></script>
