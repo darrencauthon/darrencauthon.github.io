@@ -1,0 +1,21 @@
+.network {
+    width: 90vw;
+    height: 90vh;
+    border: 1px solid lightgray;
+}
+
+p {
+    max-width:600px;
+}
+
+h4 {
+    margin-bottom:3px;
+}
+
+#newThing {
+  border: 1px solid #616161;
+  width: 100%;
+  text-align: center;
+  height: 10%;
+  font-size: 5rem;
+}
