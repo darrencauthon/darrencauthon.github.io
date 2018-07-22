@@ -278,7 +278,7 @@
 
         var listenForRecollectCommands = {
             smart: true,
-            indexes: ["listen *", "stop listening *"],
+            indexes: ["listen *", "stop listening *", "add *"],
             action: function (i, value) {
                 if (i == 0) {
                     console.log("I'm listening");
@@ -288,6 +288,9 @@
                     active = false;
                 }
                 if (active == false) return;
+                if (i == 2) {
+                    action(i, value);
+                }
             }
         };
 
