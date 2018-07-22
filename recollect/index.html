@@ -264,7 +264,9 @@
     }
 
     function addRelationship(from, to) {
-        relationshipsOnThePage.add({from:from, to: to});
+        console.log({ from: from, to: to });
+        console.log(relationshipsOnThePage);
+        relationshipsOnThePage.add(data);
     }
 
     startNetwork(getData);
