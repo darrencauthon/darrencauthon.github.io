@@ -330,9 +330,10 @@
             addNode(value);
         },
         connect: function (i, value) {
-            //darren
-            console.log(value);
-            //relationshipsOnThePage.add({})
+            var params = value.split(' to ');
+            if (params.length == 2) {
+                addRelationships({from: params[0], to: params[1]});
+            }
         },
     });
 
