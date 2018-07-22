@@ -263,6 +263,10 @@
         nodesOnThePage.add({id:id, label:id, shape: 'box'});
     }
 
+    function addRelationship(from, to) {
+        relationshipsOnThePage.add({from:from, to: to});
+    }
+
     startNetwork(getData);
 
     var attemptToSetUpVoiceCommunicationQuietly = function (actions) {
@@ -308,7 +312,7 @@
                         lang: "en-GB",
                         continuous: true,
                         listen: true,
-                        debug: false,
+                        debug: true,
                         speed: 1
                     }).then(function () {
                         console.log("artyom loaded!");
