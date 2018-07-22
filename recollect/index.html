@@ -11,7 +11,7 @@
     <link href="style.css" rel="stylesheet" type="text/css" media="all" />
 </head>
 
-<input id="recollect-text-input" type="text" value="" placeholder="(Re)collect...">
+<input id="recollect-text-input" type="text" value="" placeholder="(re)collect...">
 <div class="btn-group">
     <button id="all-connections-button">All Connections</button>
     <button id="blank-slate-button">Blank Slate</button>
@@ -28,16 +28,31 @@
 
 <script type="text/javascript">
 
+    var FIRST_LEVEL_FONT_SIZE = 20;
+    var FIRST_LEVEL_BORDER_COLOR_CODE = '#5d5d5d';
     var FIRST_LEVEL_BG_COLOR_CODE = '#40395f';
     var FIRST_LEVEL_FG_COLOR_CODE = '#fff';
+
+    var HIGHLIGHT_FIRST_LEVEL_FONT_SIZE = 20;
+    var HIGHLIGHT_FIRST_LEVEL_BORDER_COLOR_CODE = '#5d5d5d';
+    var HIGHLIGHT_FIRST_LEVEL_BG_COLOR_CODE = '#40395f';
+    var HIGHLIGHT_FIRST_LEVEL_FG_COLOR_CODE = '#fff';
+
+    var SECOND_LEVEL_FONT_SIZE = 20;
+    var SECOND_LEVEL_BORDER_COLOR_CODE = '#5d5d5d';
     var SECOND_LEVEL_BG_COLOR_CODE = '#f68a1e';
     var SECOND_LEVEL_FG_COLOR_CODE = '#000';
+
+    var THIRD_LEVEL_FONT_SIZE = 20;
+    var THIRD_LEVEL_BORDER_COLOR_CODE = '#5d5d5d';
     var THIRD_LEVEL_BG_COLOR_CODE = '#f4d035';
     var THIRD_LEVEL_FG_COLOR_CODE = '#000';
 
     var DEFAULT_CIRCLE_BORDER_COLOR = '#5d5d5d';
     var DEFAULT_CIRCLE_BACKGROUND_COLOR = '#ccc';
 
+    var HIGHLIGHT_BORDER_COLOR = 'red';
+    var HIGHLIGHT_FONT_SIZE = 20;
     var HIGHLIGHT_BG_COLOR = 'pink';
     var HIGHLIGHT_FG_COLOR = 'black';
 
@@ -60,8 +75,8 @@
         try {
             console.log('Before saving, records:', JSON.parse(localStorage.getItem('records')));
             console.log('Before saving, relationships', JSON.parse(localStorage.getItem('relationships')));
-        } catch(error){
-            // ignore
+        } catch (error) {
+            // 
         }
         localStorage.setItem('records', JSON.stringify(allData.records));
         var relationships = _.map(relationshipsOnThePage._data, (record) => {
@@ -156,14 +171,17 @@
     }
 
     const defaultColor = { border: DEFAULT_CIRCLE_BORDER_COLOR, background: DEFAULT_CIRCLE_BACKGROUND_COLOR };
+    const defaultSize = 20;
     function buildNodeFromRecord(record) {
         record.options = record.options || {};
 
         var colorOptions = _.extend({ border: DEFAULT_CIRCLE_BORDER_COLOR, background: DEFAULT_CIRCLE_BACKGROUND_COLOR }, record.options.color);
+        var fontOptions = _.extend({ vadjust: 0, align: 'center', size: defaultSize }, record.options.font);
         delete record.options.color;
 
         var options = _.extend(
             {
+                size: defaultSize,
                 id: record.id,
                 shape: 'circle',
                 shapeProperties: { borderDashes:[5,5] },
@@ -175,9 +193,10 @@
                 },
                 heightConstraint: {
                     minimum: 30,
-                    maximum: 40
+                    maximum: 120
                 },
-                font: { align: 'center' }
+                font: fontOptions,
+                chosen: false
             },
             record.options
         );
@@ -246,6 +265,59 @@
 
     startNetwork(getData);
 
+    var attemptToSetUpVoiceCommunicationQuietly = function (action) {
+        try {
+            attemptToSetUpVoiceCommunication(action);
+        } catch (error) {}
+    }
+
+    var attemptToSetUpVoiceCommunication = function(action) {
+        artyom = new Artyom();
+
+        var active = false;
+
+        var listenForRecollectCommands = {
+            smart: true,
+            indexes: ["listen *", "stop listening *"],
+            action: function (i, value) {
+                if (i == 0) {
+                    console.log("I'm listening");
+                    active = true;
+                } else if (i == 1) {
+                    console.log("I'm not listening");
+                    active = false;
+                }
+                if (active == false) return;
+            }
+        };
+
+        artyom.addCommands(listenForRecollectCommands);
+
+        function startContinuousArtyom() {
+            artyom.fatality();
+
+            setTimeout(function () {
+                    artyom.initialize({
+                        lang: "en-GB",
+                        continuous: true,
+                        listen: true,
+                        debug: false,
+                        speed: 1
+                    }).then(function () {
+                        console.log("artyom loaded!");
+                    });
+                },
+                250);
+        }
+
+        startContinuousArtyom();
+    }
+
+    attemptToSetUpVoiceCommunication(function(i, value) {
+        $("#newThing").val(value);
+        addNode(value);
+    });
+
     //function changeNode1() {
     //    var newColor = '#' + Math.floor((Math.random() * 255 * 255 * 255)).toString(16);
     //    nodes.update([{id:1, color:{background:newColor}}]);
@@ -289,49 +361,6 @@
     //    }
     //    startNetwork();
     //}
-
-    var attemptToSetUpVoiceCommunicationQuietly = function (action) {
-        try {
-            attemptToSetUpVoiceCommunication(action);
-        } catch (error) {}
-    }
-
-    var attemptToSetUpVoiceCommunication = function(action) {
-        artyom = new Artyom();
-
-        var listenForRecollectCommands = {
-            smart: true,
-            indexes: ["recollect *"],
-            action: action
-        };
-
-        artyom.addCommands(listenForRecollectCommands);
-
-        function startContinuousArtyom() {
-            artyom.fatality();
-
-            setTimeout(function () {
-                    artyom.initialize({
-                        lang: "en-GB",
-                        continuous: true,
-                        listen: true,
-                        debug: false,
-                        speed: 1
-                    }).then(function () {
-                        console.log("artyom loaded!");
-                    });
-                },
-                250);
-        }
-
-        startContinuousArtyom();
-    }
-
-    attemptToSetUpVoiceCommunication(function(i, value) {
-        $("#newThing").val(value);
-        addNode(value);
-    });
-
 </script>
 </body>
 <script src="recollect.js" type="text/javascript"></script>
