@@ -339,7 +339,7 @@
         connect: function (i, value) {
             var params = value.split(' to ');
             if (params.length == 2) {
-                addRelationship({from: params[0], to: params[1]});
+                addRelationship(params[0], params[1]);
             }
         },
     });
