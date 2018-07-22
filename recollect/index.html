@@ -313,7 +313,24 @@
             }
         };
 
+        var listenForClearCommands = {
+            indexes: ["clear my mind", "show nothing"],
+            action: function () {
+                if (active == false) return;
+                removeAllNodesFromView();
+            }
+        };
+
+        var listenForShowEverythingCommands = {
+            indexes: ["show everything", "start over"],
+            action: function () {
+                if (active == false) return;
+                bringAllNodesIntoView();
+            }
+        };
+
         artyom.addCommands(listenForRecollectCommands);
+        artyom.addCommands(listenForClearCommands);
 
         function startContinuousArtyom() {
             artyom.fatality();
