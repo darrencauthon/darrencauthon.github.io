@@ -334,7 +334,7 @@
         connect: function (i, value) {
             var params = value.split(' to ');
             if (params.length == 2) {
-                addRelationships({from: params[0], to: params[1]});
+                addRelationship({from: params[0], to: params[1]});
             }
         },
     });
