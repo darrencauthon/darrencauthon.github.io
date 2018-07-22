@@ -260,6 +260,7 @@
 
     attemptToSetUpVoiceCommunication(function(i, value) {
         $("#newThing").val(value);
+        addNode(value);
     });
 
     startNetwork(getData);
