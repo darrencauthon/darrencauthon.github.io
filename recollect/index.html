@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Recollect </title>
+    <title>Recollect</title>
     <script src="underscore-min.js" type="text/javascript"></script>
     <script src="vis.js" type="text/javascript"></script>
     <script src="jquery-3.3.1.min.js" type="text/javascript"></script>
@@ -23,7 +23,7 @@
 
 <script type="text/javascript">
 
-    var FIRST_LEVEL_FONT_SIZE = 30;
+    var FIRST_LEVEL_FONT_SIZE = 40;
     var FIRST_LEVEL_BORDER_COLOR_CODE = '#5d5d5d';
     var FIRST_LEVEL_BG_COLOR_CODE = '#243A8C';
     var FIRST_LEVEL_FG_COLOR_CODE = '#fff';
@@ -33,7 +33,7 @@
     var HIGHLIGHT_FIRST_LEVEL_BG_COLOR_CODE = '#40395f';
     var HIGHLIGHT_FIRST_LEVEL_FG_COLOR_CODE = '#fff';
 
-    var SECOND_LEVEL_FONT_SIZE = 20;
+    var SECOND_LEVEL_FONT_SIZE = 30;
     var SECOND_LEVEL_BORDER_COLOR_CODE = '#5d5d5d';
     var SECOND_LEVEL_BG_COLOR_CODE = '#FFDE3A';
     var SECOND_LEVEL_FG_COLOR_CODE = '#000';
@@ -47,8 +47,8 @@
     var DEFAULT_CIRCLE_BACKGROUND_COLOR = '#FCFCFC';
 
     var HIGHLIGHT_BORDER_COLOR = '#5d5d5d';
-    var HIGHLIGHT_FONT_SIZE = 30;
-    var HIGHLIGHT_BG_COLOR = 'blue';
+    var HIGHLIGHT_FONT_SIZE = 40;
+    var HIGHLIGHT_BG_COLOR = '#243A8C';
     var HIGHLIGHT_FG_COLOR = 'white';
 
 
@@ -393,8 +393,7 @@
             }
         },
         recollect: function (i, value) {
-            $("#recollect-text-input").val(value);
-            bringForward(value);
+            enterTerm(value);
         },
         disconnect: function (i, value) {
             var params = value.split(' from ');
