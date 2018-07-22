@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+<head>
+    <title>Network | Dynamic Data</title>
+    <script src="underscore-min.js" type="text/javascript"></script>
+    <script src="vis.min.js" type="text/javascript"></script>
+    <script src="jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="store.everything.min.js" type="text/javascript"></script>
+    <script src="artyom.window.js" type="text/javascript"></script>
+    <link href="vis.min.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="style.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<input type="button" onclick="localStorage.setItem('records', undefined);localStorage.setItem('relationships', undefined)" value="clear your local store">
+<input type="button" onclick="saveAllDataOnThePage()" value="save all changes">
+
+<div id="recollect-input" class="network"></div>
+<input id="newThing" type="text" value="" placeholder="Steve Jobs...">
+
+<input id='recollect-text-input' placeholder="" />
+<button id='update-nodes'>Bring Forward</button>
+
+<script type="text/javascript">
+
+    artyom = new Artyom();
+
+    var commandHello = {
+        indexes:["hello","good morning","hey"],
+        action:function(){
+            artyom.say("Hey buddy ! How are you today?");
+        }
+    };
+
+    artyom.addCommands(commandHello);
+
+    function startContinuousArtyom(){
+        artyom.fatality();// use this to stop any of
+
+        setTimeout(function(){// if you use artyom.fatality , wait 250 ms to initialize again.
+            artyom.initialize({
+                lang:"en-GB",// A lot of languages are supported. Read the docs !
+                continuous:true,// Artyom will listen forever
+                listen:true, // Start recognizing
+                debug:true, // Show everything in the console
+                speed:1 // talk normally
+            }).then(function(){
+                console.log("Ready to work !");
+            });
+        },250);
+    }
+
+    startContinuousArtyom();
+
+    var nodesOnThePage;
+    var relationshipsOnThePage;
+
+    var saveAllDataOnThePage = function()
+    {
+        var allData = getAllData();
+        var allDataOnTheDisplay = getAllDataOnTheDisplay();
+
+        var recordsForQuerying = new vis.DataSet(allData.records);
+
+        for (var i = 0; i < allDataOnTheDisplay.records.length; i++) {
+            var record = allDataOnTheDisplay.records[i];
+            if (recordsForQuerying.get(record.id) == undefined)
+                allData.records.push(record);
+        }
+        console.log('Before saving, records:', JSON.parse(localStorage.getItem('records')));
+        console.log('Before saving, relationships', JSON.parse(localStorage.getItem('relationships')));
+        localStorage.setItem('records', JSON.stringify(allData.records));
+        var relationships = _.map(relationshipsOnThePage._data, (record) => {
+            return { from: record.from, to: record.to }
+        });
+        localStorage.setItem('relationships', JSON.stringify(relationships));
+        console.log('Saved');
+        console.log('After saving, records:', JSON.parse(localStorage.getItem('records')));
+        console.log('After saving, relationships', JSON.parse(localStorage.getItem('relationships')));
+
+        //var relationshipsForQuerying = new vis.DataSet(allData.relationships);
+        //console.log(getAllDataOnTheDisplay().relationships);
+        //for (var i = 0; i < getAllDataOnTheDisplay().relationships.length; i++) {
+        //    var relationship = getAllDataOnTheDisplay().relationships[i];
+        //    if (relationshipsForQuerying.get({filter: function (x) { return x.from == relationship.from && x.to == relationship.to}}) == undefined)
+        //        allData.records.push(relationship);
+        //}
+        //localStorage.setItem('relationships', JSON.stringify(getAllDataOnTheDisplay().relationships));
+    }
+
+    var getAllDataOnTheDisplay = function() {
+        return {
+            records: getAllRecordsVisibleOnTheDisplay(),
+            relationships: getAllRelationshipsVisibleOnTheDisplay()
+        };
+    }
+
+    var getAllRelationshipsVisibleOnTheDisplay = function() {
+        var relationships = [];
+        relationshipsOnThePage.map((record, _) => {
+            relationships.push({ from: record.from, to: record.to });
+        });
+        return relationships;
+    }
+
+    var getAllRecordsVisibleOnTheDisplay = function() {
+        var records = [];
+        nodesOnThePage.map((record, _) => {
+            records.push({ id: record.id });
+        });
+        return records;
+    };
+
+    var getData = function(filter) {
+        var allData = getAllData();
+
+        // filter here
+
+        return allData;
+    }
+
+    var getAllData = function() {
+        return {
+            records: getAllRecords(),
+            relationships: getAllRelationships()
+        };
+    }
+
+    var getAllRelationships = function() {
+        localStorage.getItem('relationships');
+        try {
+            return JSON.parse(localStorage.getItem('relationships'));
+        } catch (error) {
+             return [
+                { from: 'BBC News', to: 'Facebook' },
+                { from: 'CTO', to: 'Cambridge Analytics' }
+            ];
+        }
+    }
+
+    var getAllRecords = function() {
+        try {
+            return JSON.parse(localStorage.getItem('records'));
+        } catch(error){
+            return [
+                { id: 'BBC News' },
+                { id: '7/21/2017' },
+                { id: '6/1/2017' },
+                { id: 'Facebook' },
+                { id: 'One trillion social media posts' },
+                { id: 'CTO' },
+                { id: 'Chris Bingham' },
+                { id: 'Crimson Hexagon' },
+                { id: 'Cambridge Analytics' },
+                { id: 'Zuckerberg testifies before Congress' },
+            ];
+        }
+    };
+
+    var displayTheseRecords = function(records) {
+        nodesOnThePage = records.map(record => buildNodeFromRecord(record));
+    }
+
+    const defaultColor = { border: '#5d5d5d', background: '#ccc' };
+    function buildNodeFromRecord(record) {
+        record.options = record.options || {};
+
+        var colorOptions = _.extend({ border: '#5d5d5d', background: '#ccc' }, record.options.color);
+        delete record.options.color;
+
+        var options = _.extend(
+            {
+                id: record.id,
+                shape: 'circle',
+                shapeProperties: { borderDashes:[5,5] },
+                label:  buildLabel(record.id),
+                color: colorOptions,
+                widthConstraint: {
+                    minimum: 120,
+                    maximum: 120
+                },
+                heightConstraint: {
+                    minimum: 30,
+                    maximum: 40
+                },
+                font: { align: 'center' }
+            },
+            record.options
+        );
+
+        return options;
+    }
+
+    function buildLabel(text) {
+        if(text.length < 20) {
+            return text;
+        } else {
+            return text.substring(0, 20) + '...';
+        }
+    };
+
+    function startNetwork(getAllData) {
+
+        var data = getAllData();
+
+        displayTheseRecords(data.records);
+
+        relationshipsOnThePage = new vis.DataSet(data.relationships);
+        nodesOnThePage = new vis.DataSet(nodesOnThePage);
+
+        // create a network
+        var inputContainer = document.getElementById('recollect-input');
+
+        var data = {
+            nodes: nodesOnThePage,
+            edges: relationshipsOnThePage
+        };
+
+        var options = {
+            layout: {
+                randomSeed:2
+            },
+            interaction:{hover:true},
+            manipulation: {
+                enabled: true
+            },
+            "edges": {
+                "smooth": false
+            },
+            "physics": {
+                "barnesHut": {
+                    "gravitationalConstant": -7650,
+                    "centralGravity": 0.4,
+                    "springLength": 0,
+                    "springConstant": 0,
+                    "damping": 1,
+                    "avoidOverlap": .1
+                },
+                "maxVelocity": 8,
+                "minVelocity": 0.75
+            }
+        };
+
+        inputNetwork = new vis.Network(inputContainer, data, options);
+    }
+
+    var clusters = [];
+
+    function addNode(id) {
+        nodesOnThePage.add({id:id, label:id, shape: 'box'});
+    }
+
+    startNetwork(getData);
+
+    //function changeNode1() {
+    //    var newColor = '#' + Math.floor((Math.random() * 255 * 255 * 255)).toString(16);
+    //    nodes.update([{id:1, color:{background:newColor}}]);
+    //}
+
+    //function removeRandomNode() {
+    //    var randomNodeId = nodeIds[Math.floor(Math.random() * nodeIds.length)];
+    //    nodes.remove({id:randomNodeId});
+
+    //    var index = nodeIds.indexOf(randomNodeId);
+    //    nodeIds.splice(index,1);
+    //}
+
+    //function changeOptions() {
+    //    shadowState = !shadowState;
+    //    network.setOptions({nodes:{shadow:shadowState},edges:{shadow:shadowState}});
+    //}
+
+    //function resetAllNodes() {
+    //    nodes.clear();
+    //    edges.clear();
+    //    nodes.add(nodesOnThePage);
+    //    edges.add(edgesArray);
+    //}
+
+    //function resetAllNodesStabilize() {
+    //    resetAllNodes();
+    //    network.stabilize();
+    //}
+
+    //function setTheData() {
+    //    nodes = new vis.DataSet(nodesOnThePage);
+    //    edges = new vis.DataSet(edgesArray);
+    //    network.setData({nodes:nodes, edges:edges})
+    //}
+
+    //function resetAll() {
+    //    if (network !== null) {
+    //        network.destroy();
+    //        network = null;
+    //    }
+    //    startNetwork();
+    //}
+</script>
+</body>
+<script src="recollect.js" type="text/javascript"></script>
+</html>

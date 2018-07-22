@@ -1,5 +1,13 @@
 var newColor = 'orange';
 $(document).ready(() => {
+  inputNetwork.on('click', function (params) {
+    if(params.nodes.length > 0) {
+      var nodeId = params.nodes[0];
+      contractTextForAllNodes();
+      expandTextForNode(nodeId);
+    }
+  });
+
   $('#recollect-text-input, #newThing').keyup((el) => {
     const searchTerm = $(el.target).val().toLowerCase();
     highlightNodes(searchTerm);
@@ -25,6 +33,32 @@ $(document).ready(() => {
   });
 });
 
+function expandTextForNode(nodeId) {
+  nodesOnThePage.update([
+    {
+      id: nodeId,
+      label: findRecordById(nodeId).id
+    }
+  ]);
+}
+
+function contractTextForAllNodes() {
+  _.each(getAllData().records, record => {
+
+    if (!nodesOnThePage._data[record.id]) {
+      return;
+    }
+
+
+    nodesOnThePage.update([
+      {
+        id: record.id,
+        label: buildLabel(record.id),
+      }
+    ]);
+  });
+}
+
 function bringForward(searchTerm) {
   _.each(nodesOnThePage._data, node => {
     nodesOnThePage.remove(node);
@@ -37,16 +71,16 @@ function bringForward(searchTerm) {
   const recordsLinkedBySkippingOne = findRecordsLinkedToThese(recordsLinkedDirectly);
 
   _.each(exactRecordMatches, record => {
-    record.options = { color: { background: 'orange' } };
+    record.options = { color: { background: 'dark blue' } };
     addRecordToNodesOnThePage(record);
   });
   _.each(recordsLinkedDirectly, record => {
-    record.options = { color: { background: '#42d242' } };
+    record.options = { color: { background: 'orange' } };
     addRecordToNodesOnThePage(record);
   });
 
   _.each(recordsLinkedBySkippingOne, record => {
-    record.options = { color: { background: 'tan' } };
+    record.options = { color: { background: 'yellow' } };
     addRecordToNodesOnThePage(record);
   });
 
@@ -88,14 +122,18 @@ function findMatchingNodeIds(searchTerm) {
   return nodeIdsToUpdate;
 }
 
+function findRecordById(id) {
+  return _.find(getAllData().records, record => record.id === id);
+}
+
+
 function highlightNodes(searchTerm) {
   var nodeIdsToUpdate = findMatchingNodeIds(searchTerm);
 
   nodesOnThePage.update(_.keys(nodesOnThePage._data).map(id => {
     return {
       id: id,
-      color: null,
-      font: null,
+      color: defaultColor
     };
   }));
   nodesOnThePage.update(nodeIdsToUpdate.map(id => {
