@@ -22,17 +22,25 @@
 
 <script type="text/javascript">
 
+    var nodesOnThePage;
+    var relationshipsOnThePage;
+
+    var fireThisWhenASpeechMatchIsMade = function(input)
+    {
+        console.log(input);
+    }
+
     artyom = new Artyom();
 
-    var commandHello = {
+    var listenForRecollectCommands = {
         smart: true,
-        indexes: ["my name is *"],
-        action: function(i, wildcard) {
-            artyom.say("hi" + wildcard);
+        indexes: ["recollect *"],
+        action: function(i, value) {
+            fireThisWhenASpeechMatchIsMade(value);
         }
     };
 
-    artyom.addCommands(commandHello);
+    artyom.addCommands(listenForRecollectCommands);
 
     function startContinuousArtyom(){
         artyom.fatality();
@@ -42,18 +50,16 @@
                 lang:"en-GB",
                 continuous:true,
                 listen:true,
-                debug:true,
+                debug:false,
                 speed:1
             }).then(function(){
-                console.log("Ready to work !");
+                console.log("artyom loaded!");
             });
         },250);
     }
 
     startContinuousArtyom();
 
-    var nodesOnThePage;
-    var relationshipsOnThePage;
 
     var saveAllDataOnThePage = function()
     {
