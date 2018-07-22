@@ -25,11 +25,6 @@
     var nodesOnThePage;
     var relationshipsOnThePage;
 
-    var fireThisWhenASpeechMatchIsMade = function(input)
-    {
-        console.log(input);
-    }
-
     var saveAllDataOnThePage = function()
     {
         var allData = getAllData();
@@ -264,7 +259,10 @@
     }
 
     attemptToSetUpVoiceCommunication(function(i, value) {
-        fireThisWhenASpeechMatchIsMade(value);
+        $("#newThing").val(value);
+    });
+
+;
     });
 
 
