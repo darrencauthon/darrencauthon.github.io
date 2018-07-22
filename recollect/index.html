@@ -388,7 +388,7 @@
             bringForward(value);
         },
         disconnect: function (i, value) {
-            var params = value.split(' to ');
+            var params = value.split(' from ');
             if (params.length == 2) {
                 removeRelationship(params[0], params[1]);
             }
