@@ -33,17 +33,10 @@ function go() {
     var data = {};
     FB.login(function(loginResponse) {
                           console.log(loginResponse);
-                          for (var prop in loginResponse)
-                            data[prop] = loginResponse[prop];
-                          for (var prop in loginResponse.authResponse)
-                            data[prop] = loginResponse.authResponse[prop];
 
                           FB.api('/me', {fields: 'email,first_name,last_name'}, function(meResponse) {
 
-                            for (var prop in meResponse)
-                                data[prop] = meResponse[prop];
-
-                            console.log(data);
+                            console.log(meResponse);
 
                             FB.logout(function(logoutResponse) { console.log(logoutResponse); });
 
