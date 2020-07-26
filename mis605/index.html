@@ -35,8 +35,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
 <script>
 function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-                          console.log(response);
+    FB.getLoginStatus(function(loginResponse) {
+                          console.log(loginResponse);
+                          FB.logout(function(logoutResponse) {
+                              console.log(logoutResponse);
+                          });
                       });
 }
 </script>
