@@ -27,28 +27,21 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 
 <div>
-    <fb:login-button 
-    scope="public_profile,email"
-    onlogin="checkLoginState();">
-    </fb:login-button>
+    <a href="#" onclick="go">Click Here To Login</a>
 </div>
 
 <script>
-function checkLoginState() {
-    FB.getLoginStatus(function(loginResponse) {
+function go() {
+    FB.login(function(loginResponse) {
                           console.log(loginResponse);
 
                           FB.api('/me', function(meResponse) {
-
                             console.log(meResponse);
-
-                            FB.logout(function(logoutResponse) {
-                                console.log(logoutResponse);
-                            });
+                            FB.logout(function(logoutResponse) { console.log(logoutResponse); });
 
                           });
 
-                      });
+             }, "email,public_profile");
 }
 </script>
 
