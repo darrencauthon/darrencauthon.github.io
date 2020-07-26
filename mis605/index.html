@@ -35,7 +35,7 @@ function go() {
     FB.login(function(loginResponse) {
                           console.log(loginResponse);
 
-                          FB.api('/me', {fields: 'email'}, function(meResponse) {
+                          FB.api('/me', {fields: 'email,first_name,last_name'}, function(meResponse) {
                             console.log(meResponse);
                             FB.logout(function(logoutResponse) { console.log(logoutResponse); });
 
