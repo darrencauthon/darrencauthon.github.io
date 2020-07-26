@@ -35,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
 <script>
 function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-                          console.log(response);
-                      });
+    FB.login(function(response) {
+        console.log(response);
+    }, {scope: 'public_profile,email'});
 }
 </script>
 
